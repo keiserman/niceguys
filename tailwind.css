@@ -11,7 +11,7 @@
 }
 
 .video-wrapper {
-  @apply h-full bg-neutral-800 relative;
+  @apply h-full relative;
 }
 
 .logo-text {
