@@ -11,11 +11,20 @@ function initVideos() {
   videos.forEach((video) => {
     video.muted = true;
     video.loop = true;
-    video.addEventListener("mouseenter", () => {
-      video.play();
-    });
-    video.addEventListener("mouseout", () => {
-      video.pause();
-    });
+
+    const observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play();
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(video);
   });
 }
