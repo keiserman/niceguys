@@ -566,6 +566,10 @@ video {
   display: grid;
 }
 
+.h-16 {
+  height: 4rem;
+}
+
 .h-full {
   height: 100%;
 }
@@ -580,6 +584,14 @@ video {
 
 .grid-rows-\[1fr_4fr_1fr\] {
   grid-template-rows: 1fr 4fr 1fr;
+}
+
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.items-center {
+  align-items: center;
 }
 
 .justify-center {

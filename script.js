@@ -1,10 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   initVideos();
-  initAnimations();
 });
 
 function initAnimations() {
-  gsap.from(".video-wrapper", { scale: 0, stagger: 0.3, duration: 0.3 });
+  gsap.from(".video-wrapper", { scale: 0, duration: 0.3 });
 }
 
 function initVideos() {
