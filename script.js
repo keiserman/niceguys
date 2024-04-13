@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   initVideos();
+  initAnimations();
 });
 
 function initAnimations() {
@@ -7,13 +8,15 @@ function initAnimations() {
 }
 
 function initVideos() {
-  const videos = document.querySelectorAll("video");
+  const videoWrappers = document.querySelectorAll(".video-wrapper");
 
-  videos.forEach((video) => {
-    video.muted = true;
+  if (window.innerWidth < 768) {
+    videoWrappers.forEach((videoWrapper) => {
+      const video = videoWrapper.querySelector("video");
+      if (!video) return;
+      video.muted = true;
 
-    if (window.innerWidth < 768) {
-      console.log(true);
+      // Set up autoplay
       let playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.then((_) => {
@@ -32,6 +35,20 @@ function initVideos() {
           observer.observe(video);
         });
       }
-    }
-  });
+    });
+  } else {
+    videoWrappers.forEach((videoWrapper) => {
+      const video = videoWrapper.querySelector("video");
+      if (!video) return;
+      video.muted = true;
+
+      // Set up hover play/pause
+      video.addEventListener("mouseenter", () => {
+        video.play();
+      });
+      video.addEventListener("mouseout", () => {
+        video.pause();
+      });
+    });
+  }
 }

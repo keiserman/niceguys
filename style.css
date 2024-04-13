@@ -554,6 +554,10 @@ video {
   --tw-contain-style:  ;
 }
 
+.block {
+  display: block;
+}
+
 .flex {
   display: flex;
 }
@@ -576,10 +580,6 @@ video {
 
 .h-svh {
   height: 100svh;
-}
-
-.w-auto {
-  width: auto;
 }
 
 .grid-rows-\[1fr_4fr_1fr\] {
@@ -609,11 +609,6 @@ video {
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-
-.object-cover {
-  -o-object-fit: cover;
-     object-fit: cover;
 }
 
 .p-4 {
