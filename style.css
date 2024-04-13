@@ -646,8 +646,17 @@ video {
 
 .video-wrapper {
   position: relative;
+  aspect-ratio: 16 / 9;
   height: 100%;
-  flex-shrink: 0;
+  --tw-bg-opacity: 1;
+  background-color: rgb(38 38 38 / var(--tw-bg-opacity));
+}
+
+.video {
+  height: 100%;
+  width: auto;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .logo-text {
