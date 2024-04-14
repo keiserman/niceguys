@@ -658,39 +658,14 @@ video {
      object-fit: cover;
 }
 
-.hls-video {
-  height: 100%;
-  width: auto;
-  -o-object-fit: cover;
-     object-fit: cover;
-}
-
 .logo-text {
   font-size: 6rem;
   line-height: 1;
   font-weight: 600;
 }
 
-@media (min-width: 640px) {
-  .sm\:hidden {
-    display: none;
-  }
-}
-
 @media (min-width: 768px) {
   .md\:block {
     display: block;
-  }
-
-  .md\:flex {
-    display: flex;
-  }
-
-  .md\:hidden {
-    display: none;
-  }
-
-  .md\:flex-col {
-    flex-direction: column;
   }
 }

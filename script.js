@@ -7,24 +7,25 @@ function initAnimations() {
 }
 
 function initVideos() {
-  const video = document.querySelector(".hls-video");
-  let videoSrc = video.src;
-
-  if (Hls.isSupported()) {
-    let hls = new Hls();
-    hls.loadSource(videoSrc);
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+  const videos = document.querySelectorAll(".video");
+  videos.forEach((video) => {
+    let videoSrc = video.src;
+    if (Hls.isSupported()) {
+      let hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        video.muted = true;
+        handleVideoEvents(video);
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = videoSrc;
       video.muted = true;
-      handleVideoEvents(video);
-    });
-  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = videoSrc;
-    video.muted = true;
-    video.addEventListener("loadedmetadata", function () {
-      handleVideoEvents(video);
-    });
-  }
+      video.addEventListener("loadedmetadata", function () {
+        handleVideoEvents(video);
+      });
+    }
+  });
 
   function handleVideoEvents(video) {
     if (window.innerWidth < 768) {
