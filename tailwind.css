@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-.row {
+.row1,
+.row2,
+.row3 {
   @apply flex items-center gap-4 overflow-hidden;
 }
 

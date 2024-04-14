@@ -5,9 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function initAnimations() {
   let tl = gsap.timeline();
-  tl.from("[animate='top-row']", { x: "150%", duration: 0.5 });
-  tl.from("[animate='middle-row']", { x: "-150%", duration: 0.5 }, "<0.3");
-  tl.from("[animate='bottom-row']", { x: "150%", duration: 0.5 }, "<0.3");
+  tl.from(".row1", { x: "150%", duration: 0.5 });
+  tl.from(".row2", { x: "-150%", duration: 0.5 }, "<0.3");
+  tl.from(".row3", { x: "150%", duration: 0.5 }, "<0.3");
   tl.from("[animate='logo1']", { y: "-150%", duration: 0.5 });
   tl.from("[animate='logo2']", { y: "150%", duration: 0.5 }, "<");
 }
