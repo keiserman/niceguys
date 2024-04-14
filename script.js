@@ -1,13 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
-  initVideos();
+  const videos = document.querySelectorAll(".video");
+  initVideos(videos);
 });
 
 function initAnimations() {
-  gsap.from(".video-wrapper", { scale: 0, duration: 0.3 });
+  let tl = gsap.timeline();
+  tl.from("[animate='top-row']", { x: "150%", duration: 0.5 });
+  tl.from("[animate='middle-row']", { x: "-150%", duration: 0.5 }, "<0.3");
+  tl.from("[animate='bottom-row']", { x: "150%", duration: 0.5 }, "<0.3");
+  tl.from("[animate='logo1']", { y: "-150%", duration: 0.5 });
+  tl.from("[animate='logo2']", { y: "150%", duration: 0.5 }, "<");
 }
 
-function initVideos() {
-  const videos = document.querySelectorAll(".video");
+function initVideos(videos) {
   videos.forEach((video) => {
     let videoSrc = video.src;
     if (Hls.isSupported()) {
@@ -28,6 +33,7 @@ function initVideos() {
   });
 
   function handleVideoEvents(video) {
+    video.currentTime = 5;
     if (window.innerWidth < 768) {
       let observer = new IntersectionObserver(
         (entries) => {

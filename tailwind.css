@@ -6,16 +6,28 @@
   @apply flex items-center gap-4 overflow-hidden;
 }
 
+.navbar {
+  @apply md:flex items-center justify-center gap-8 hidden;
+}
+
 .navbar-link {
   @apply text-2xl md:text-4xl;
 }
 
+.video-list-wrapper {
+  @apply h-full;
+}
+
+.video-list {
+  @apply flex gap-4 h-full;
+}
+
 .video-wrapper {
-  @apply aspect-video h-full relative bg-neutral-800;
+  @apply aspect-video h-auto md:h-full relative bg-neutral-800;
 }
 
 .video {
-  @apply h-full w-auto object-cover;
+  @apply h-full w-full object-cover;
 }
 
 .logo-text {
