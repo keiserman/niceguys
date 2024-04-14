@@ -19,28 +19,6 @@
     tl.from("[animate='logo2']", { y: "150%", duration: 0.5 }, "<");
   }
 
-  function initMobileVideo(video) {
-    video.muted = true;
-    let playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.then((_) => {
-        let observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.intersectionRatio !== 1 && !video.paused) {
-                video.pause();
-              } else if (video.paused) {
-                video.play();
-              }
-            });
-          },
-          { threshold: 0.2 }
-        );
-        observer.observe(video);
-      });
-    }
-  }
-
   function initVideos() {
     const videos = document.querySelectorAll(".video");
     const lightbox = document.querySelector(".lightbox");
@@ -65,6 +43,8 @@
 
     videos.forEach((video) => {
       const videoSrc = video.querySelector("source").src;
+      const clipStartTime = 10;
+      const clipEndTime = 15;
 
       if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = videoSrc;
@@ -77,34 +57,40 @@
         video.hlsInstance = hls;
       }
 
-      const clipStartTime = 10;
-      const clipEndTime = 15;
-
-      video.addEventListener("mouseenter", function () {
+      if (video.hasAttribute("mobile")) {
         if (video.hlsInstance) {
           video.hlsInstance.startLoad(clipStartTime);
         }
         video.currentTime = clipStartTime;
         video.muted = true;
         video.play();
-      });
-
-      video.addEventListener("mouseleave", function () {
-        video.pause();
-        if (video.hlsInstance) {
-          video.hlsInstance.stopLoad();
-        }
-      });
-
-      video.addEventListener("timeupdate", function () {
-        if (video.currentTime >= clipEndTime) {
-          video.pause();
+      } else {
+        video.addEventListener("mouseenter", function () {
+          if (video.hlsInstance) {
+            video.hlsInstance.startLoad(clipStartTime);
+          }
           video.currentTime = clipStartTime;
+          video.muted = true;
+          video.play();
+        });
+
+        video.addEventListener("mouseleave", function () {
+          video.pause();
           if (video.hlsInstance) {
             video.hlsInstance.stopLoad();
           }
-        }
-      });
+        });
+
+        video.addEventListener("timeupdate", function () {
+          if (video.currentTime >= clipEndTime) {
+            video.pause();
+            video.currentTime = clipStartTime;
+            if (video.hlsInstance) {
+              video.hlsInstance.stopLoad();
+            }
+          }
+        });
+      }
 
       video.addEventListener("click", () => {
         lightboxClient.textContent = video.dataset.client;
@@ -114,6 +100,12 @@
 
         const videoPoster = video.getAttribute("poster");
         lightboxVideo.setAttribute("poster", videoPoster);
+
+        video.pause();
+        video.currentTime = clipStartTime;
+        if (video.hlsInstance) {
+          video.hlsInstance.stopLoad();
+        }
 
         if (lightboxVideo.canPlayType("application/vnd.apple.mpegurl")) {
           lightboxVideo.src = videoSrc;

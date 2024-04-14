@@ -18,6 +18,10 @@
   @apply h-full w-auto object-cover;
 }
 
+.hls-video {
+  @apply h-full w-auto object-cover;
+}
+
 .logo-text {
   @apply text-8xl font-semibold;
 }

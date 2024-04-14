@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
   initVideos();
-  initAnimations();
 });
 
 function initAnimations() {
@@ -8,47 +7,47 @@ function initAnimations() {
 }
 
 function initVideos() {
-  const videoWrappers = document.querySelectorAll(".video-wrapper");
+  const video = document.querySelector(".hls-video");
+  let videoSrc = video.src;
 
-  if (window.innerWidth < 768) {
-    videoWrappers.forEach((videoWrapper) => {
-      const video = videoWrapper.querySelector("video");
-      if (!video) return;
+  if (Hls.isSupported()) {
+    let hls = new Hls();
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function () {
       video.muted = true;
-
-      // Set up autoplay
-      let playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.then((_) => {
-          let observer = new IntersectionObserver(
-            (entries) => {
-              entries.forEach((entry) => {
-                if (entry.intersectionRatio !== 1 && !video.paused) {
-                  video.pause();
-                } else if (video.paused) {
-                  video.play();
-                }
-              });
-            },
-            { threshold: 0.2 }
-          );
-          observer.observe(video);
-        });
-      }
+      handleVideoEvents(video);
     });
-  } else {
-    videoWrappers.forEach((videoWrapper) => {
-      const video = videoWrapper.querySelector("video");
-      if (!video) return;
-      video.muted = true;
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = videoSrc;
+    video.muted = true;
+    video.addEventListener("loadedmetadata", function () {
+      handleVideoEvents(video);
+    });
+  }
 
-      // Set up hover play/pause
+  function handleVideoEvents(video) {
+    if (window.innerWidth < 768) {
+      let observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.intersectionRatio !== 1 && !video.paused) {
+              video.pause();
+            } else if (video.paused) {
+              video.play();
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+      observer.observe(video);
+    } else {
       video.addEventListener("mouseenter", () => {
         video.play();
       });
       video.addEventListener("mouseout", () => {
         video.pause();
       });
-    });
+    }
   }
 }
