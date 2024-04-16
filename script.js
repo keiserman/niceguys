@@ -20,12 +20,10 @@ function initVideos(videos) {
       hls.loadSource(videoSrc);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function () {
-        video.muted = true;
         handleVideoEvents(video);
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = videoSrc;
-      video.muted = true;
       video.addEventListener("loadedmetadata", function () {
         handleVideoEvents(video);
       });
@@ -34,14 +32,16 @@ function initVideos(videos) {
 
   function handleVideoEvents(video) {
     video.currentTime = 5;
+    video.muted = true;
+
     if (window.innerWidth < 768) {
       let observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.intersectionRatio !== 1 && !video.paused) {
-              video.pause();
-            } else if (video.paused) {
+            if (entry.isIntersecting) {
               video.play();
+            } else if (video.paused) {
+              video.pause();
             }
           });
         },

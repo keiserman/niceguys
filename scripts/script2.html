@@ -24,49 +24,50 @@
 
   function initVideos(videos) {
     videos.forEach((video) => {
-      let videoSrc = video.src;
-      if (Hls.isSupported()) {
-        let hls = new Hls();
-        hls.loadSource(videoSrc);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+      function setupVideo() {
+        let videoSrc = video.getAttribute("data-src");
+        video.currentTime = 5;
+        if (Hls.isSupported()) {
+          let hls = new Hls();
+          hls.loadSource(videoSrc);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            video.muted = true;
+          });
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+          video.src = videoSrc;
           video.muted = true;
-          handleVideoEvents(video);
-        });
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = videoSrc;
-        video.muted = true;
-        video.addEventListener("loadedmetadata", function () {
-          handleVideoEvents(video);
-        });
+        }
       }
-    });
 
-    function handleVideoEvents(video) {
-      video.currentTime = 10;
-      if (window.innerWidth < 768) {
-        let observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.intersectionRatio !== 1 && !video.paused) {
-                video.pause();
-              } else if (video.paused) {
-                video.play();
-              }
-            });
-          },
-          { threshold: 0.2 }
-        );
-        observer.observe(video);
-      } else {
-        video.addEventListener("mouseenter", () => {
-          video.play();
-        });
-        video.addEventListener("mouseout", () => {
-          video.pause();
-        });
+      function handleVideoEvents() {
+        if (window.innerWidth > 768) {
+          video.addEventListener("mouseenter", function () {
+            video.play();
+          });
+          video.addEventListener("mouseout", function () {
+            video.pause();
+          });
+        } else {
+          let observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.intersectionRatio !== 1 && !video.paused) {
+                  video.pause();
+                } else if (video.paused) {
+                  video.play();
+                }
+              });
+            },
+            { threshold: 0.2 }
+          );
+          observer.observe(video);
+        }
       }
-    }
+
+      video.addEventListener("mouseenter", setupVideo, { once: true });
+      handleVideoEvents();
+    });
   }
 
   function initLightbox(videos) {
@@ -82,7 +83,7 @@
     });
   }
 
-  function initVideos2() {
+  function initVideos3() {
     const videos = document.querySelectorAll(".video");
     const lightbox = document.querySelector(".lightbox");
     const lightboxVideo = lightbox.querySelector(".lightbox-video");
