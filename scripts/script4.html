@@ -1,0 +1,30 @@
+<script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const videos = document.querySelectorAll(".video");
+    videos.forEach((video) => {
+      // Remove native controls, Plyr will handle controls
+      video.removeAttribute("controls");
+
+      const player = new Plyr(video, {
+        ratio: "16:9", // Set the aspect ratio
+        controls: [], // Hide controls if desired
+        muted: true, // Typically necessary for autoplay to function in most browsers
+        autoplay: true, // Configure autoplay
+      });
+
+      // Adding mouseenter and mouseleave events
+      video.addEventListener("mouseenter", () => {
+        player.play().catch((error) => {
+          console.error("Error playing the video:", error);
+        });
+      });
+
+      video.addEventListener("mouseleave", () => {
+        player.pause().catch((error) => {
+          console.error("Error pausing the video:", error);
+        });
+      });
+    });
+  });
+</script>

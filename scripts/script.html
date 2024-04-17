@@ -43,8 +43,6 @@
 
     videos.forEach((video) => {
       const videoSrc = video.querySelector("source").src;
-      const clipStartTime = 10;
-      const clipEndTime = 15;
 
       if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = videoSrc;
@@ -57,40 +55,34 @@
         video.hlsInstance = hls;
       }
 
-      if (video.hasAttribute("mobile")) {
+      const clipStartTime = 10;
+      const clipEndTime = 15;
+
+      video.addEventListener("mouseenter", function () {
         if (video.hlsInstance) {
           video.hlsInstance.startLoad(clipStartTime);
         }
         video.currentTime = clipStartTime;
         video.muted = true;
         video.play();
-      } else {
-        video.addEventListener("mouseenter", function () {
-          if (video.hlsInstance) {
-            video.hlsInstance.startLoad(clipStartTime);
-          }
-          video.currentTime = clipStartTime;
-          video.muted = true;
-          video.play();
-        });
+      });
 
-        video.addEventListener("mouseleave", function () {
+      video.addEventListener("timeupdate", function () {
+        if (video.currentTime >= clipEndTime) {
           video.pause();
+          video.currentTime = clipStartTime;
           if (video.hlsInstance) {
             video.hlsInstance.stopLoad();
           }
-        });
+        }
+      });
 
-        video.addEventListener("timeupdate", function () {
-          if (video.currentTime >= clipEndTime) {
-            video.pause();
-            video.currentTime = clipStartTime;
-            if (video.hlsInstance) {
-              video.hlsInstance.stopLoad();
-            }
-          }
-        });
-      }
+      video.addEventListener("mouseleave", function () {
+        video.pause();
+        if (video.hlsInstance) {
+          video.hlsInstance.stopLoad();
+        }
+      });
 
       video.addEventListener("click", () => {
         lightboxClient.textContent = video.dataset.client;
@@ -100,12 +92,6 @@
 
         const videoPoster = video.getAttribute("poster");
         lightboxVideo.setAttribute("poster", videoPoster);
-
-        video.pause();
-        video.currentTime = clipStartTime;
-        if (video.hlsInstance) {
-          video.hlsInstance.stopLoad();
-        }
 
         if (lightboxVideo.canPlayType("application/vnd.apple.mpegurl")) {
           lightboxVideo.src = videoSrc;
@@ -166,18 +152,24 @@
   }
 
   function setupTabs() {
-    const tabLinks = document.querySelectorAll(".navbar_link");
+    const links = document.querySelectorAll(".navbar_link");
+    const sections = document.querySelectorAll(".section");
+    sections.forEach((section) => {
+      if (!section.classList.contains("active")) {
+        section.style.display = "none";
+      }
+    });
 
-    tabLinks.forEach((link) => {
+    links.forEach((link) => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
 
         const tabName = link.getAttribute("data-tab");
-        document.querySelectorAll(".section").forEach((section) => {
+        sections.forEach((section) => {
           section.style.display = "none";
         });
 
-        tabLinks.forEach((link) => {
+        links.forEach((link) => {
           link.className = link.className.replace(" active", "");
         });
 
@@ -190,13 +182,13 @@
       });
 
       link.addEventListener("mouseover", () => {
-        tabLinks.forEach((link) => {
+        links.forEach((link) => {
           link.style.backgroundImage = "none";
         });
       });
 
       link.addEventListener("mouseout", () => {
-        tabLinks.forEach((link) => {
+        links.forEach((link) => {
           link.style.backgroundImage = "";
         });
       });
