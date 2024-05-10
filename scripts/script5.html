@@ -1,30 +1,143 @@
-<script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", function (event) {
     const videos = document.querySelectorAll(".video");
-    videos.forEach((video) => {
-      // Remove native controls, Plyr will handle controls
-      video.removeAttribute("controls");
+    const marquees = document.querySelectorAll(".marquee");
+    const tabs = document.querySelectorAll(".navbar-link");
 
-      const player = new Plyr(video, {
-        ratio: "16:9", // Set the aspect ratio
-        controls: [], // Hide controls if desired
-        muted: true, // Typically necessary for autoplay to function in most browsers
-        autoplay: true, // Configure autoplay
+    initVideos(videos);
+    initMarquees(marquees);
+    setupTabs(tabs);
+  });
+
+  function initVideos(videos) {
+    const lightbox = document.querySelector(".lightbox");
+    const lightboxVideo = lightbox.querySelector(".lightbox-video");
+    const lightboxClose = lightbox.querySelector(".lightbox-close");
+    const lightboxClient = lightbox.querySelector("[data-client]");
+    const lightboxDirector = lightbox.querySelector("[data-director]");
+    const lightboxProducer = lightbox.querySelector("[data-producer]");
+
+    const player = new Plyr(lightboxVideo, {
+      controls: ["play", "progress", "volume", "mute", "settings"],
+      ratio: "16:9",
+    });
+
+    lightboxClose.addEventListener("click", () => {
+      lightbox.style.display = "none";
+      player.stop();
+    });
+
+    videos.forEach((video) => {
+      video.addEventListener("click", () => {
+        lightboxClient.textContent = video.dataset.client;
+        lightboxProducer.textContent = video.dataset.producer;
+        lightboxDirector.textContent = video.dataset.director;
+        lightbox.style.display = "block";
+
+        const videoPoster = video.getAttribute("poster");
+        lightboxVideo.setAttribute("poster", videoPoster);
+
+        video.pause();
+        lightboxVideo.src = video.getAttribute("lightbox-src");
+        lightboxVideo.load();
       });
 
-      // Adding mouseenter and mouseleave events
-      video.addEventListener("mouseenter", () => {
-        player.play().catch((error) => {
-          console.error("Error playing the video:", error);
+      if (window.innerWidth < 768) {
+        let observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                video.play();
+              } else if (video.paused) {
+                video.pause();
+              }
+            });
+          },
+          { threshold: 0.2 }
+        );
+        observer.observe(video);
+      } else {
+        video.addEventListener("mouseenter", () => {
+          video.play();
+        });
+        video.addEventListener("mouseout", () => {
+          video.pause();
+        });
+      }
+    });
+  }
+
+  function initMarquees(marquees) {
+    marquees.forEach((marquee) => {
+      const reverse = marquee.classList.contains("is-alt");
+      let directionMultiplier = reverse ? 1 : -1;
+
+      let tween = gsap.to(marquee.querySelectorAll(".marquee-content"), {
+        x: () => directionMultiplier * 100 + "%",
+        repeat: -1,
+        duration: 4,
+        ease: "linear",
+        paused: true,
+      });
+
+      marquee.addEventListener("mousemove", (event) => {
+        requestAnimationFrame(() => {
+          const rect = marquee.getBoundingClientRect();
+          const mouseX = event.clientX - rect.left;
+          const width = rect.width;
+          const percentage = (mouseX / width) * 100;
+
+          if (percentage <= 20) {
+            reverse ? tween.play() : tween.reverse();
+          } else if (percentage >= 80) {
+            reverse ? tween.reverse() : tween.play();
+          } else {
+            tween.pause();
+          }
         });
       });
 
-      video.addEventListener("mouseleave", () => {
-        player.pause().catch((error) => {
-          console.error("Error pausing the video:", error);
+      marquee.addEventListener("mouseout", () => {
+        tween.pause();
+      });
+    });
+  }
+
+  function setupTabs(tabs) {
+    tabs.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const tabName = link.getAttribute("data-tab");
+        document.querySelectorAll(".section").forEach((section) => {
+          section.style.display = "none";
+        });
+
+        tabs.forEach((link) => {
+          link.className = link.className.replace(" active", "");
+        });
+
+        const targetTab = document.getElementById(tabName);
+        if (targetTab) {
+          targetTab.style.display = "block";
+          e.currentTarget.className += " active";
+          targetTab.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+
+      link.addEventListener("mouseover", () => {
+        tabs.forEach((link) => {
+          link.style.backgroundImage = "none";
+        });
+      });
+
+      link.addEventListener("mouseout", () => {
+        tabs.forEach((link) => {
+          link.style.backgroundImage = "";
         });
       });
     });
-  });
+  }
 </script>
